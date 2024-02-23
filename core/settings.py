@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     "phonenumber_field",
     "cloudinary",
     "cloudinary_storage",
-    "drf_yasg",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -132,7 +132,22 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-CLOUDINARY_STORAGE =  {
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "NeoTour",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SWAGGER_UI_SETTINGS": {
+        "filter": True,
+    },
+    "COMPONENT_SPLIT_REQUEST": True
+}
+
+CLOUDINARY_STORAGE = {
     "CLOUD_NAME": "dwdz2kvqj",
     "API_KEY": "641762541535781",
     "API_SECRET": "vQhFCsUDFvsCR1-iOdAWoCqnfZo"
