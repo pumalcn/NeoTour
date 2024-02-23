@@ -6,19 +6,30 @@ from .serializers import BookingSerializer, TourSerializer, ReviewSerializer
 from rest_framework import generics
 
 
-class ListTour(generics.ListAPIView):
-    queryset = Tour.objects.all()
-    serializer_class = TourSerializer
+class ListTour(APIView):
+    def get(self, request):
+        tours = Tour.objects.all()
+        serializer = TourSerializer(tours, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class CreateTour(generics.CreateAPIView):
-    queryset = Tour.objects.all()
-    serializer_class = TourSerializer
+class CreateTour(APIView):
+    def post(self, request):
+        serializer = TourSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class RetrieveTour(generics.RetrieveAPIView):
-    queryset = Tour.objects.all()
-    serializer_class = TourSerializer
+class RetrieveTour(APIView):
+    def get(self, request, pk):
+        try:
+            tour = Tour.objects.get(pk=pk)
+        except Tour.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = TourSerializer(tour)
+        return Response(serializer.data)
 
 
 class UpdateTour(generics.UpdateAPIView):
@@ -31,97 +42,62 @@ class DestroyTour(generics.DestroyAPIView):
     lookup_field = 'pk'
 
 
-class FilteredTour(generics.ListAPIView):
-    """
-        /tours/filtered/?is_popular=true
-        /tours/filtered/?is_most_visited=true&region=europe
-        /tours/filtered/?is_featured=true
-
-    """
-    serializer_class = TourSerializer
-
-    def get_queryset(self):
-
+class FilteredTour(APIView):
+    def get(self, request):
         queryset = Tour.objects.all()
-        is_popular = self.request.query_params.get('is_popular')
-        is_most_visited = self.request.query_params.get('is_most_visited')
-        is_featured = self.request.query_params.get('is_featured')
-        region = self.request.query_params.get('region')
+        is_on_promotion = request.query_params.get('is_on_promotion')
+        region = request.query_params.get('region')
 
-        # Apply filters if the parameters are in the query
-        if is_popular is not None:
-            queryset = queryset.filter(is_popular=is_popular.lower() in ['true', '1', 'yes'])
-        if is_most_visited is not None:
-            queryset = queryset.filter(is_most_visited=is_most_visited.lower() in ['true', '1', 'yes'])
-        if is_featured is not None:
-            queryset = queryset.filter(is_featured=is_featured.lower() in ['true', '1', 'yes'])
-        if region is not None and region != '':
+        if is_on_promotion is not None:
+            queryset = queryset.filter(is_on_promotion=is_on_promotion.lower() in ['true', '1', 'yes'])
+        if region:
             queryset = queryset.filter(region=region)
 
-        return queryset
+        serializer = TourSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class CreateReview(generics.CreateAPIView):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
+class ListTourCategory(APIView):
+    def get(self, request, category_name):
+        tours = Tour.objects.filter(category__name=category_name)
+        if not tours:
+            return Response({"message": "No tours found for the given category or invalid category name."},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        serializer = TourSerializer(tours, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class CreateBooking(generics.CreateAPIView):
-    queryset = Booking.objects.all()
-    serializer_class = BookingSerializer
+class CreateReview(APIView):
+    def post(self, request):
+        serializer = ReviewSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ListBooking(generics.ListAPIView):
-    queryset = Booking.objects.all()
-    serializer_class = BookingSerializer
+class CreateBooking(APIView):
+    def post(self, request):
+        serializer = BookingSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class RetrieveBooking(generics.RetrieveAPIView):
-    queryset = Booking.objects.all()
-    serializer_class = BookingSerializer
+class ListBooking(APIView):
+    def get(self, request):
+        bookings = Booking.objects.all()
+        serializer = BookingSerializer(bookings, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-
-# class TourList(APIView):
-#     def get(self, request):
-#         tours = Tour.objects.all()
-#         serializer = TourSerializer(tours, many=True)
-#         return Response(serializer.data)
-#
-#     def post(self, request):
-#         serializer = TourSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#
-#
-# class ReviewListAPIView(APIView):
-#     def get(self, request):
-#         reviews = Review.objects.all()
-#         serializer = ReviewSerializer(reviews, many=True)
-#         return Response(serializer.data)
-#
-#     def post(self, request):
-#         serializer = ReviewSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#
-#
-# class BookingListAPIView(APIView):
-#     def get(self, request):
-#         bookings = Booking.objects.all()
-#         serializer = BookingSerializer(bookings, many=True)
-#         return Response(serializer.data)
-#
-#     def post(self, request):
-#         serializer = BookingSerializer(data=request.data)
-#         if serializer.is_valid():
-#             try:
-#                 serializer.save()
-#                 return Response(serializer.data, status=status.HTTP_201_CREATED)
-#             except ValidationError as e:
-#                 return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class RetrieveBooking(APIView):
+    def get(self, request, pk):
+        try:
+            booking = Booking.objects.get(pk=pk)
+        except Booking.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = BookingSerializer(booking)
+        return Response(serializer.data)

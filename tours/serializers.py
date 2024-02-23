@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Tour, Review, Booking
+from .models import Tour, Review, Booking, TourCategory
 from django.db.models import Sum
 from rest_framework.exceptions import ValidationError
 
@@ -25,7 +25,7 @@ class BookingSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
-        fields = '__all__'
+        fields = ['reviewer_name', 'reviewer_photo', 'review_text']
 
 
 class TourSerializer(serializers.ModelSerializer):
@@ -36,4 +36,7 @@ class TourSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
+class TourCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TourCategory
+        fields = '__all__'

@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import ListTour, RetrieveTour, UpdateTour, DestroyTour, CreateReview, ListBooking, CreateBooking,\
-    CreateTour, RetrieveBooking, FilteredTour
+from .views import ListTour, RetrieveTour, UpdateTour, DestroyTour, CreateReview, ListBooking, CreateBooking, \
+    CreateTour, RetrieveBooking, FilteredTour, ListTourCategory
 
 urlpatterns = [
     path('list-tours/', ListTour.as_view(), name='list-tour'),
@@ -13,4 +13,5 @@ urlpatterns = [
     path('list-bookings/', ListBooking.as_view(), name='list-booking'),
     path('create-booking/', CreateBooking.as_view(), name='create-booking'),
     path('retrieve-booking/<int:pk>/', RetrieveBooking.as_view(), name='retrieve-booking'),
+    path('category-tour/<str:category_name>/', ListTourCategory.as_view(), name='list-tour-category')
 ]
