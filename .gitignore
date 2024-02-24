@@ -10,3 +10,4 @@ tourvenv/
 /.vscode
 /static
 .DS_Store
+*.env

@@ -19,6 +19,8 @@ packaging==23.2
 phonenumberslite==8.13.30
 pillow==10.2.0
 psycopg2==2.9.9
+python-decouple==3.8
+python-dotenv==1.0.1
 pytz==2024.1
 PyYAML==6.0.1
 referencing==0.33.0
